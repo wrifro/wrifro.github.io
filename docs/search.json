@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "posts/example-blog-post/firstPost.html",
+    "href": "posts/example-blog-post/firstPost.html",
+    "title": "Intro blog post",
+    "section": "",
+    "text": "And now I’ll try adding it in markdown:\ndef addTwoNumbers(num_a, num_b):\n    sum = num_a + num_b\n    return sum\naddTwoNumbers(3,5)\nLet’s see if this post works…"
+  },
+  {
     "objectID": "posts/example-blog-post/index.html",
     "href": "posts/example-blog-post/index.html",
     "title": "Hello Blog",
@@ -11,14 +18,14 @@
     "href": "posts/example-blog-post/index.html#math",
     "title": "Hello Blog",
     "section": "Math",
-    "text": "Math\nIn addition to regular text using the Markdown specification, you can also write mathematics, enclosed between dollar signs. The syntax for writing math is very similar to the syntax used in the \\(\\LaTeX\\) markup language. For example, $f(x) \\approx y$ renders to \\(f(x) \\approx y\\). To place complex mathematical expressions on their own lines, use double dollar signs. For example, the expression\n$$\\mathcal{L}(a, b) = \\sum_{i = 1}^n (ax_i + b - y_i)^2$$\nrenders to:\n\\[\\mathcal{L}(a, b) = \\sum_{i = 1}^n (ax_i + b - y_i)^2\\;.\\]\nBehind the scenes, math is powered by the MathJax engine. For more on how to write math, check this handy tutorial and quick reference."
+    "text": "Math\nIn addition to regular text using the Markdown specification, you can also write mathematics, enclosed between dollar signs. The syntax for writing math is very similar to the syntax used in the \\(\\LaTeX\\) markup language. For example, $f(x) \\approx y$ renders to \\(f(x) \\approx y\\). To place complex mathematical expressions on their own lines, use double dollar signs. For example, the expression\n$$\\mathcal{L}(a, b) = \\sum_{i = 1}^n (ax_i + b - y_i)^2$$\nrenders to:\n\\[\\mathcal{L}(a, b) = \\sum_{i = 1}^n (ax_i + b - y_i)^2\\;.\\]\nBehind the scenes, math is powered by the MathJax engine. For more on how to write math, check this handy tutorial and quick reference.\n---\ntitle: Intro blog post\nauthor: Wright Frost\ndate: '2023-02-16'\ndescription: 'Just playing around with markdown and quarto'\nformat: html\n---\n\n\n\nI’m going to add some python code:\ndef addTwoNumbers(num_a, num_b):\n    sum = num_a + num_b\n    return sum\naddTwoNumbers(3,5)\n```\n\n\n\nWill this work and make a new post? Not sure. Hopefully yes.\nAnyway….. my name is Wright, I’m a Computer Science and Geography Double major, and this is my attempt at a blog post!"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "My Awesome CSCI 0451 Blog",
     "section": "",
-    "text": "An example blog post illustrating the key techniques you’ll need to demonstrate your learning in CSCI 0451.\n\n\n\n\n\n\nJan 10, 2023\n\n\nPhil Chodrow\n\n\n\n\n\n\nNo matching items"
+    "text": "Just playing around with markdown and quarto\n\n\n\n\n\n\nFeb 16, 2023\n\n\nWright Frost\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\nAn example blog post illustrating the key techniques you’ll need to demonstrate your learning in CSCI 0451.\n\n\n\n\n\n\nJan 10, 2023\n\n\nPhil Chodrow\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
