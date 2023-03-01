@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Wright Frost">
-<meta name="dcterms.date" content="2023-02-27">
+<meta name="dcterms.date" content="2023-02-28">
 <meta name="description" content="Implementing and Exploring the Perceptron Algorithm">
 
 <title>My Awesome CSCI 0451 Blog - Perceptron Blog</title>
@@ -132,6 +132,7 @@ background-size: cover;
     }
     </style>
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -197,7 +198,7 @@ background-size: cover;
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">February 27, 2023</p>
+        <p class="date">February 28, 2023</p>
       </div>
     </div>
       
@@ -214,170 +215,200 @@ background-size: cover;
 
 
 
-<div class="cell" data-execution_count="1">
+<p>Perceptron class: <a href="https://github.com/wrifro/wrifro.github.io/blob/main/posts/Blog_1/perceptron.py">click here</a></p>
+<section id="lets-begin-by-replicating-the-example-from-class-making-two-sets-of-points-and-running-the-perceptron-algorithm-on-them" class="level3">
+<h3 class="anchored" data-anchor-id="lets-begin-by-replicating-the-example-from-class-making-two-sets-of-points-and-running-the-perceptron-algorithm-on-them">Let’s begin by replicating the example from class: making two sets of points and running the perceptron algorithm on them</h3>
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">12345</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>p_features <span class="op">=</span> <span class="dv">3</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> make_blobs(n_samples <span class="op">=</span> <span class="dv">100</span>, n_features <span class="op">=</span> p_features <span class="op">-</span> <span class="dv">1</span>, centers <span class="op">=</span> [(<span class="op">-</span><span class="fl">1.7</span>, <span class="op">-</span><span class="fl">1.7</span>), (<span class="fl">1.7</span>, <span class="fl">1.7</span>)])</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Feature 1"</span>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Feature 2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> perceptron <span class="im">import</span> Perceptron</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">12345</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>p_features <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> make_blobs(n_samples <span class="op">=</span> <span class="dv">100</span>, n_features <span class="op">=</span> p_features <span class="op">-</span> <span class="dv">1</span>, centers <span class="op">=</span> [(<span class="op">-</span><span class="fl">1.7</span>, <span class="op">-</span><span class="fl">1.7</span>), (<span class="fl">1.7</span>, <span class="fl">1.7</span>)])</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> Perceptron()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>p.fit(X, y,<span class="dv">1000</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_line(w, x_min, x_max,pos,<span class="op">**</span>kwargs): <span class="co"># "pos" = position, i.e. where to plot (plt, ax)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> np.linspace(x_min, x_max, <span class="dv">101</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  y <span class="op">=</span> <span class="op">-</span>(w[<span class="dv">0</span>]<span class="op">*</span>x <span class="op">+</span> w[<span class="dv">2</span>])<span class="op">/</span>w[<span class="dv">1</span>]</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  pos.plot(x, y, color <span class="op">=</span> <span class="st">"black"</span>, linestyle <span class="op">=</span> <span class="st">"dashed"</span> <span class="cf">if</span> kwargs <span class="cf">else</span> <span class="st">"solid"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> draw_line(p.w, <span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>,plt)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Feature 1"</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Feature 2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="PerceptronBlog_files/figure-html/cell-2-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> perceptron <span class="im">import</span> Perceptron</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> Perceptron()</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>p.fit(X, y,<span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>If we print the last ten values in the Perceptron history array – that is to say, how accurate the last ten values were, we see that 99% of points were correctly classified for 9 of the last ten iterations, before the algorithm achieves 100% accuracy. 100% accuracy is achieved when the algorithm misclassifies a point and makes one final correction. It makes sense that there would be many instances of a 99% accurate line before the final update, since in order to update the algorithm needs to incorrectly classify a point. If 99% of points are correctly classfied, it will take a long time to randomly select a point that is misclassified and forces the algorithm to update.</p>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p.history[<span class="op">-</span><span class="dv">10</span>:])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 1.0]</code></pre>
-</div>
-</div>
-<p>We can further highlight this by showing the change in accuracy over time.</p>
+<p>This perceptron works! We can show that it converges by showing the change in accuracy - how many points are correctly classified - over time.</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.plot(p.history)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Iteration"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Accuracy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.plot(p.history)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Iteration"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Accuracy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="PerceptronBlog_files/figure-html/cell-5-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_line(w, x_min, x_max,pos,<span class="op">**</span>kwargs): <span class="co"># "pos" = position, i.e. where to plot (plt, ax)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> np.linspace(x_min, x_max, <span class="dv">101</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  y <span class="op">=</span> <span class="op">-</span>(w[<span class="dv">0</span>]<span class="op">*</span>x <span class="op">+</span> w[<span class="dv">2</span>])<span class="op">/</span>w[<span class="dv">1</span>]</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  pos.plot(x, y, color <span class="op">=</span> <span class="st">"black"</span>, linestyle <span class="op">=</span> <span class="st">"dashed"</span> <span class="cf">if</span> kwargs <span class="cf">else</span> <span class="st">"solid"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> draw_line(p.w, <span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>,plt)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#fig = draw_line(p.w[-2], -2, 2,plt,linestyle = "dashed")</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Feature 1"</span>)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Feature 2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="PerceptronBlog_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+<p><img src="PerceptronBlog_files/figure-html/cell-3-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>p.score(X, (<span class="dv">2</span><span class="op">*</span>y<span class="op">-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p.score(X, (<span class="dv">2</span><span class="op">*</span>y<span class="op">-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>1.0</code></pre>
 </div>
 </div>
-<section id="if-the-data-are-linearly-separable-then-the-perceptron-algorithm-will-converge." class="level3">
-<h3 class="anchored" data-anchor-id="if-the-data-are-linearly-separable-then-the-perceptron-algorithm-will-converge.">If the data are linearly separable, then the perceptron algorithm will converge.</h3>
-<p>Let’s vizualise this showing the progression of the Perceptron algorithm over time.</p>
-<p>Step one is genarating two clusters of points, nearly exactly the same as those used above.</p>
-<div class="cell" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>p_features <span class="op">=</span> <span class="dv">3</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>X1, y1 <span class="op">=</span> make_blobs(n_samples <span class="op">=</span> <span class="dv">100</span>, n_features <span class="op">=</span> p_features <span class="op">-</span> <span class="dv">1</span>, centers <span class="op">=</span> [(<span class="op">-</span><span class="fl">1.7</span>, <span class="op">-</span><span class="fl">1.3</span>), (<span class="fl">1.7</span>,<span class="fl">1.6</span>)])</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.scatter(X1[:,<span class="dv">0</span>], X1[:,<span class="dv">1</span>], c <span class="op">=</span> y1)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Feature 1"</span>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Feature 2"</span>)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>p2 <span class="op">=</span> Perceptron()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="PerceptronBlog_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<section id="lets-see-how-the-algorithm-updates-over-time-if-the-data-are-linearly-separable." class="level4">
-<h4 class="anchored" data-anchor-id="lets-see-how-the-algorithm-updates-over-time-if-the-data-are-linearly-separable.">Let’s see how the algorithm updates over time if the data are linearly separable.</h4>
-<p>These three plots only show instances where the weight vector updates (that is to say, when the algorithm misclassifies a point and updates the weight vector to reflect this).</p>
-<div class="cell" data-execution_count="60">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">4</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, sharex <span class="op">=</span> <span class="va">True</span>, sharey <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>w_next <span class="op">=</span> np.random.rand(p_features)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axarr.ravel():</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>))</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    w_prev <span class="op">=</span> w_next</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X1[:,<span class="dv">0</span>],X1[:,<span class="dv">1</span>], c <span class="op">=</span> y1)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    draw_line(w_prev, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax,linestyle <span class="op">=</span> <span class="st">"dashed"</span>) </span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    done <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> done <span class="op">==</span> <span class="va">False</span>:</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        score_prev <span class="op">=</span> score</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        w_next,score,i <span class="op">=</span> p2.update(X1,y1,w_prev)</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (score_prev <span class="op">!=</span> score) <span class="kw">or</span> score <span class="op">==</span> <span class="dv">1</span> :</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>            done <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    draw_line(w_next, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X1[i, <span class="dv">0</span>], X1[i, <span class="dv">1</span>],color <span class="op">=</span> <span class="st">"none"</span>, facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"red"</span>)</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    accuracy <span class="op">=</span> (score)</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f"accuracy = </span><span class="sc">{</span>accuracy<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="PerceptronBlog_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
-</div>
-</div>
 </section>
+<section id="how-does-the-perceptron-algorithm-work" class="level2">
+<h2 class="anchored" data-anchor-id="how-does-the-perceptron-algorithm-work">How does the perceptron algorithm work?</h2>
+<p>The key part of the perceptron algorithm is the update step. In my code, this is done in both the fit and update methods.</p>
+<p>Mathematically, this can be represented as: (on a personal note this is the first thing I have ever done in LaTeX and I’m really proud of it)</p>
+<p><span class="math inline">\(\hat{w}^{(t+1)} = \hat{w}^t + \mathbb{1}(\tilde{y}_i(\vec{\hat{w}^t} \cdot \vec{\tilde{x}_1}) &lt;0){\tilde{y}_i} {\tilde{x}_1}\)</span></p>
+<p>Within the <code>fit()</code> method, this is done in the following code:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>y_hat <span class="op">=</span> np.dot(w,X_i)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>w_i <span class="op">=</span> ( (np.multiply(y_hat, y_i) <span class="op">&gt;=</span> <span class="dv">0</span>) <span class="op">*</span> w_i)  <span class="op">+</span> ( (np.multiply(y_hat, y_i) <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">*</span> (w_i <span class="op">+</span> np.multiply(y_i,X_i)) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The logic is actually fairly simple. <code>Y_hat</code> represents the predicted score for <code>X_i</code>, the current index/value being considered. If <code>y_hat</code> is correctly classified, multiplying it by <code>y_i</code> should yield <code>True</code>, equal to 1 in Python. The other part of the equation checks to see if this product is less than 1 (using 1s and -1s instead of 1s and 0s for our y values makes this possible). If it is, this expression will evaluate to <code>True</code>, which is equal to 1 in Python.</p>
+<p>Only one of these expressions is true at any given time. When <code>False</code>, these evaluate to zero.</p>
+<p>If the first expression is <code>True</code>, aka when it is equivalent to 1, it preserves the current weight vector, while the second expression, equal to zero, nullifies its coefficient.</p>
+<p>When the second expression is <code>True</code> and therefore equal to 1, it is multiplied by the sum of <code>w_i</code> (the current weight vector) and the product of the feature matrix (X) at index i, and the classification matrix (y) at index i. This sounds complicated, but really this line of code is just either keeping the old weight vector if it classified point i correctly, or adding or subtracting the value it incorrectly classified to ensure that it classifies it correctly in the next iteration.</p>
+<p>This logic is the same in the <code>update</code> method. The only difference is that <code>update</code> accepts a weight vector as a parameter, running only a single step of the Perceptron algorithm rather than to completion.</p>
+</section>
+<section id="if-the-data-are-linearly-separable-then-the-perceptron-algorithm-will-converge." class="level2">
+<h2 class="anchored" data-anchor-id="if-the-data-are-linearly-separable-then-the-perceptron-algorithm-will-converge.">If the data are linearly separable, then the perceptron algorithm will converge.</h2>
+<p>Let’s vizualise the process of improvement by showing the progression of the Perceptron algorithm over time.</p>
+<div class="cell" data-execution_count="91">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Feature 1"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Feature 2"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>p2 <span class="op">=</span> Perceptron()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="PerceptronBlog_files/figure-html/cell-5-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<section id="lets-see-how-the-algorithm-updates-over-time" class="level3">
+<h3 class="anchored" data-anchor-id="lets-see-how-the-algorithm-updates-over-time">Let’s see how the algorithm updates over time…</h3>
+<p>These three plots only show instances where the weight vector updates (that is to say, when the algorithm misclassifies a point and updates the weight vector to reflect this). This ensures that we actually see how the Perceptron algorithm corrects itself over time. Otherwise, we might just see three cases where it correctly classifies a point and nothing changes. <strong>BORING!!!</strong></p>
+<div class="cell" data-execution_count="79">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>w_next <span class="op">=</span> np.random.rand(p_features)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">4</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, sharex <span class="op">=</span> <span class="va">True</span>, sharey <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>X_1 <span class="op">=</span> np.append(X, np.ones((X.shape[<span class="dv">0</span>], <span class="dv">1</span>)), <span class="dv">1</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>score_prev <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axarr.ravel():</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    w_prev <span class="op">=</span> w_next</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X[:,<span class="dv">0</span>],X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    draw_line(w_prev, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax,linestyle <span class="op">=</span> <span class="st">"dashed"</span>) </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    done <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> done <span class="op">==</span> <span class="va">False</span>:</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        w_next, score, i <span class="op">=</span> p2.update(X,y,w_prev)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (score_prev <span class="op">!=</span> score) <span class="kw">or</span> score <span class="op">==</span> <span class="dv">1</span> :</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            done <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    score_prev <span class="op">=</span> score</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    draw_line(w_next, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X[i, <span class="dv">0</span>], X[i, <span class="dv">1</span>],color <span class="op">=</span> <span class="st">"none"</span>, facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"red"</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    accuracy <span class="op">=</span> (score)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f"accuracy = </span><span class="sc">{</span>accuracy<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="PerceptronBlog_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>It is fairly easy to see that the algorithm updates when it missclassifies a point, gradually improving until it achieves convergence.</p>
 </section>
 <section id="what-if-the-data-are-not-linearly-separable" class="level3">
 <h3 class="anchored" data-anchor-id="what-if-the-data-are-not-linearly-separable">What if the data are not linearly separable?</h3>
 <p>Let’s repeat the same experiment as above, only this time, using two clouds of points that are NOT linearly separable.</p>
-<p>We can achieve this easily with the make_blobs function by making the centers closer to one another.</p>
-<div class="cell" data-execution_count="66">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>X2, y2 <span class="op">=</span> make_blobs(n_samples <span class="op">=</span> <span class="dv">100</span>, n_features <span class="op">=</span> p_features <span class="op">-</span> <span class="dv">1</span>, centers <span class="op">=</span> [(<span class="op">-</span><span class="fl">1.7</span>, <span class="op">-</span><span class="fl">1.3</span>), (<span class="fl">1.7</span>,<span class="fl">0.3</span>)])</span>
+<p>We can achieve this easily with the <code>make_blobs</code> function by making the centers closer to one another.</p>
+<div class="cell" data-execution_count="80">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>X2, y2 <span class="op">=</span> make_blobs(n_samples <span class="op">=</span> <span class="dv">100</span>, n_features <span class="op">=</span> p_features <span class="op">-</span> <span class="dv">1</span>, centers <span class="op">=</span> [(<span class="op">-</span><span class="fl">1.7</span>, <span class="op">-</span><span class="fl">1.3</span>), (<span class="fl">1.7</span>,<span class="fl">0.3</span>)])</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.scatter(X2[:,<span class="dv">0</span>], X2[:,<span class="dv">1</span>], c <span class="op">=</span> y2)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Feature 1"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Feature 2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="PerceptronBlog_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="90">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>fig1, axarr1 <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, sharex <span class="op">=</span> <span class="va">True</span>, sharey <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>w_next1 <span class="op">=</span> np.random.rand(p_features)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>score_1 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axarr1.ravel():</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    w_prev1 <span class="op">=</span> w_next1</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X2[:,<span class="dv">0</span>],X2[:,<span class="dv">1</span>], c <span class="op">=</span> y2)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    draw_line(w_prev1, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax,linestyle <span class="op">=</span> <span class="st">"dashed"</span>) </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    done <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> done <span class="op">==</span> <span class="va">False</span>:</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        score_prev <span class="op">=</span> score1</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        w_next1,score1,i <span class="op">=</span> p2.update(X2,y2,w_prev1)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (score_prev <span class="op">!=</span> score1) <span class="kw">or</span> score1 <span class="op">==</span> <span class="dv">1</span> :</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>            done <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    draw_line(w_next1, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X2[i, <span class="dv">0</span>], X2[i, <span class="dv">1</span>],color <span class="op">=</span> <span class="st">"none"</span>, facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"red"</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    accuracy <span class="op">=</span> (score1)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f"accuracy = </span><span class="sc">{</span>accuracy<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="PerceptronBlog_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We can see that the algorithm still updates and tries to correct itself, but is unable to achieve 100% accuracy. Including more subplots helps to show that this process of guessing but never achieving convergence will continue infinitely.</p>
+</section>
+<section id="can-perceptron-work-in-more-than-2-dimensions" class="level3">
+<h3 class="anchored" data-anchor-id="can-perceptron-work-in-more-than-2-dimensions">Can Perceptron work in more than 2 dimensions?</h3>
+<p>Only one way to find out…</p>
+<p>Let’s start by generating a 5D feature matrix.</p>
+<div class="cell" data-execution_count="136">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>X5d <span class="op">=</span> np.random.rand(<span class="dv">100</span>,<span class="dv">5</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>y5d <span class="op">=</span> np.random.choice([<span class="dv">0</span>, <span class="dv">1</span>], size<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We now have a random 5d feature matrix, and a random binary classification for each point.</p>
+<p>Let’s try to run it with 10,000 max steps…</p>
+<div class="cell" data-execution_count="137">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="op">=</span> Perceptron()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.scatter(X2[:,<span class="dv">0</span>], X2[:,<span class="dv">1</span>], c <span class="op">=</span> y2)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>xlab <span class="op">=</span> plt.xlabel(<span class="st">"Feature 1"</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>ylab <span class="op">=</span> plt.ylabel(<span class="st">"Feature 2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="PerceptronBlog_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>p3.fit(X5d,y5d, max_steps <span class="op">=</span> <span class="dv">10000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Did it work?</p>
+<div class="cell" data-execution_count="138">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>p3.score(X5d,<span class="dv">2</span><span class="op">*</span>y5d<span class="op">-</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="138">
+<pre><code>0.6</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="73">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">4</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fig1, axarr1 <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, sharex <span class="op">=</span> <span class="va">True</span>, sharey <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>w_next1 <span class="op">=</span> np.random.rand(p_features)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axarr1.ravel():</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>), ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>))</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    w_prev1 <span class="op">=</span> w_next1</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X2[:,<span class="dv">0</span>],X2[:,<span class="dv">1</span>], c <span class="op">=</span> y2)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    draw_line(w_prev1, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax,linestyle <span class="op">=</span> <span class="st">"dashed"</span>) </span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    done <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> done <span class="op">==</span> <span class="va">False</span>:</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        score_prev <span class="op">=</span> score1</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        w_next1,score1,i <span class="op">=</span> p2.update(X2,y2,w_prev1)</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (score_prev <span class="op">!=</span> score1) <span class="kw">or</span> score1 <span class="op">==</span> <span class="dv">1</span> :</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>            done <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    draw_line(w_next1, <span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>,ax)</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X2[i, <span class="dv">0</span>], X2[i, <span class="dv">1</span>],color <span class="op">=</span> <span class="st">"none"</span>, facecolors <span class="op">=</span> <span class="st">"none"</span>, edgecolors <span class="op">=</span> <span class="st">"red"</span>)</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    accuracy <span class="op">=</span> (score1)</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f"accuracy = </span><span class="sc">{</span>accuracy<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="PerceptronBlog_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<p>We can see that the algorithm still updates and tries to correct itself, but is unable to achieve total accuracy. Including more subplots shows that this process of guessing but never achieving convergence will continue infinitely.</p>
+<p>It works! It makes sense that it wouldn’t achieve convergence on a completely random set of points and classifications.</p>
+<p>It is worth asking, though, is it <em>theoretically</em> possible to have a linearly separable set of points in 5 (or more) dimensions?</p>
+<p>It is pretty straightforward to see that this is possible in 3 dimensions - imagine a flat plane separating 2 clouds of points in 3 dimensions.</p>
+<p>In 5 dimensions, all that this means is that the weight vector multiplied by the feature matrix correctly classifies each point – either one or zero. One does not need to imagine what a 5D physical space might look like to see that this is certainly achievable.</p>
+</section>
+<section id="perceptron-runtime" class="level3">
+<h3 class="anchored" data-anchor-id="perceptron-runtime">Perceptron Runtime</h3>
+<p>Finally, let’s consider the question of how long it takes for the update step to run.</p>
+<p>What is actually happening? Just multiplication and some logical comparisons, really – we check to see if mathematically the product of our weight vector and the feature matrix evaluates to what we would expect it to be, and if not, we perform some simple matrix multiplication and addition to get our new weight vector. This only takes O(1) time! It does not matter how many points there are, because we are only focusing on a single data point at a time, and updating only relative to that point. And while the computation is more complex with a greature number of features, it still will run in O(1) time.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
