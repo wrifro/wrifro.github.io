@@ -214,6 +214,7 @@ background-size: cover;
 
 
 
+<p>Logistic Regression Source Code: <a href="https://github.com/wrifro/wrifro.github.io/blob/main/posts/Blog_2/LogisticRegression.py">click here</a></p>
 <section id="gradient-descent-background" class="level1">
 <h1>Gradient Descent Background</h1>
 <p>Gradient descent takes advantage of convexity to minimize empirical risk for a function. Much like the perceptron algorithm, the goal of the experiments in this blog post is to find the best line dividing two sets of points; unlike perceptron, these points may not be linearly separable. So, what advantage does gradient descent offer? If our loss function is convex, we know that we can use gradient descent to find the local minimum of the function, and therefore find the optimal line dividing our two sets of points. This line will not perfectly divide the two sets of points, but we know that it is the best possible line because we have minimized the loss. That’s the theory behind all of this… let’s dive into the implementation.</p>
