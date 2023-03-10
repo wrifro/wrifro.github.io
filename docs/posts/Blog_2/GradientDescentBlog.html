@@ -247,7 +247,7 @@ background-size: cover;
 <section id="regular-gradient-descent" class="level3">
 <h3 class="anchored" data-anchor-id="regular-gradient-descent">Regular Gradient Descent</h3>
 <p>We can fit a logistic regression model using regular gradient descent. This is a no frills approach – we are considering every point, calculating a new gradient for empirical risk based on the performance of the current weight vector, and, once empirical risk is minimized, the function is considered to be optimized.</p>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="131">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LogisticRegression()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>LR.fit(X,y,alpha <span class="op">=</span> <span class="fl">0.01</span>,m_epochs <span class="op">=</span> <span class="dv">10000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -257,25 +257,26 @@ background-size: cover;
 </div>
 <section id="now-lets-vizualize-this" class="level4">
 <h4 class="anchored" data-anchor-id="now-lets-vizualize-this">Now let’s vizualize this…</h4>
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> LR.w</span>
+<div class="cell" data-execution_count="132">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>w1 <span class="op">=</span> LR.w</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> LR.empirical_risk(X_, y, LR.loss, w)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>loss1 <span class="op">=</span> LR.loss(X_, y,w1)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>)</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Feature 1"</span>, ylabel <span class="op">=</span> <span class="st">"Feature 2"</span>, title <span class="op">=</span> <span class="ss">f"Loss = </span><span class="sc">{</span>loss<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Feature 1"</span>, ylabel <span class="op">=</span> <span class="st">"Feature 2"</span>, title <span class="op">=</span> <span class="ss">f"Loss = </span><span class="sc">{</span>loss1<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">101</span>)</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> axarr[<span class="dv">0</span>].plot(f1, (w[<span class="dv">2</span>] <span class="op">-</span> f1<span class="op">*</span>w[<span class="dv">0</span>])<span class="op">/</span>w[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> axarr[<span class="dv">0</span>].plot(f1, (w1[<span class="dv">2</span>] <span class="op">-</span> f1<span class="op">*</span>w1[<span class="dv">0</span>])<span class="op">/</span>w1[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>)</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].plot(LR.loss_history)</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Iteration number"</span>, ylabel <span class="op">=</span> <span class="st">"Empirical Risk"</span>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>AttributeError: 'LogisticRegression' object has no attribute 'empirical_risk'</code></pre>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].legend([<span class="st">"Regular Gradient Descent"</span>])</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="GradientDescentBlog_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>This function does pretty well! 14.7% empirical risk is a pretty good performance, and visually, the line fits what we might expect. We can see in the plot on the right that the loss moved rapidly to a good solution but took a while to fully minimize.</p>
@@ -286,31 +287,31 @@ background-size: cover;
 <p>Stochastic descent is <em>like</em> regular gradient descent, but weight is updated for a subset of points at a time rather than for all points.</p>
 <p>The batch_size argument denotes how large the subset of points used for weight updates is.</p>
 <div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>LR2 <span class="op">=</span> LogisticRegression()</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>LR2.fit_stochastic(X,y,<span class="dv">10000</span>,alpha<span class="op">=</span><span class="fl">0.01</span>,batch_size <span class="op">=</span> <span class="dv">20</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>LR2 <span class="op">=</span> LogisticRegression()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>LR2.fit_stochastic(X,y,<span class="dv">10000</span>,alpha<span class="op">=</span><span class="fl">0.01</span>,batch_size <span class="op">=</span> <span class="dv">20</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>w2 <span class="op">=</span> LR2.w</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>loss2 <span class="op">=</span> LR2.loss(X_, y,w2)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Feature 1"</span>, ylabel <span class="op">=</span> <span class="st">"Feature 2"</span>, title <span class="op">=</span> <span class="ss">f"Loss = </span><span class="sc">{</span>loss2<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">101</span>)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> axarr[<span class="dv">0</span>].plot(f1, (w2[<span class="dv">2</span>] <span class="op">-</span> f1<span class="op">*</span>w2[<span class="dv">0</span>])<span class="op">/</span>w2[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].plot(LR2.loss_history)</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Iteration number"</span>, ylabel <span class="op">=</span> <span class="st">"Empirical Risk"</span>)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].legend([<span class="st">"Stochastic Grad Desc"</span>])</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>w2 <span class="op">=</span> LR2.w</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>loss2 <span class="op">=</span> LR2.loss(X_, y,w2)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Feature 1"</span>, ylabel <span class="op">=</span> <span class="st">"Feature 2"</span>, title <span class="op">=</span> <span class="ss">f"Loss = </span><span class="sc">{</span>loss2<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">101</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> axarr[<span class="dv">0</span>].plot(f1, (w2[<span class="dv">2</span>] <span class="op">-</span> f1<span class="op">*</span>w2[<span class="dv">0</span>])<span class="op">/</span>w2[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].plot(LR2.loss_history)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Iteration number"</span>, ylabel <span class="op">=</span> <span class="st">"Empirical Risk"</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].legend([<span class="st">"Stochastic Grad Desc"</span>])</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="GradientDescentBlog_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
 </div>
@@ -322,40 +323,40 @@ background-size: cover;
 <h3 class="anchored" data-anchor-id="relevance-of-alpha">Relevance of Alpha</h3>
 <p>So far, we’ve worked with alpha = 0.01. This is a small but reasonable learning rate. But what if it’s bigger?</p>
 <div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>LR.fit(X,y,alpha <span class="op">=</span> <span class="dv">5</span>,m_epochs <span class="op">=</span> <span class="dv">10000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>LR.fit(X,y,alpha <span class="op">=</span> <span class="dv">5</span>,m_epochs <span class="op">=</span> <span class="dv">10000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged</code></pre>
 </div>
 </div>
 <p>Converges with alpha = 5…</p>
 <div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>LR.fit(X,y,alpha <span class="op">=</span> <span class="dv">100</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>LR.fit(X,y,alpha <span class="op">=</span> <span class="dv">100</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged</code></pre>
 </div>
 </div>
 <p>Converges with alpha = 100, but we need many more epochs…</p>
 <div class="cell" data-execution_count="32">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>LR.fit(X,y,alpha <span class="op">=</span> <span class="dv">10000</span>, m_epochs <span class="op">=</span> <span class="dv">100000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>LR.fit(X,y,alpha <span class="op">=</span> <span class="dv">10000</span>, m_epochs <span class="op">=</span> <span class="dv">100000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Doesn’t converge with alpha = 10,000 and 100,000 epochs.</p>
 <p>Let’s dive into the loss history of this iteration of the Logistic Regression fit method.</p>
 <div class="cell" data-execution_count="48">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>w3 <span class="op">=</span> LR.w</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Feature 1"</span>, ylabel <span class="op">=</span> <span class="st">"Feature 2"</span>, title <span class="op">=</span> <span class="ss">f"Loss = </span><span class="sc">{</span>loss3<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">101</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> axarr[<span class="dv">0</span>].plot(f1, (w3[<span class="dv">2</span>] <span class="op">-</span> f1<span class="op">*</span>w3[<span class="dv">0</span>])<span class="op">/</span>w3[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>)</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].plot(LR.loss_history)</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Iteration number"</span>, ylabel <span class="op">=</span> <span class="st">"Empirical Risk"</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].legend([<span class="st">"Stochastic Grad Desc"</span>])</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>w3 <span class="op">=</span> LR.w</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].scatter(X[:,<span class="dv">0</span>], X[:,<span class="dv">1</span>], c <span class="op">=</span> y)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">0</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Feature 1"</span>, ylabel <span class="op">=</span> <span class="st">"Feature 2"</span>, title <span class="op">=</span> <span class="ss">f"Loss = </span><span class="sc">{</span>loss3<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">101</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> axarr[<span class="dv">0</span>].plot(f1, (w3[<span class="dv">2</span>] <span class="op">-</span> f1<span class="op">*</span>w3[<span class="dv">0</span>])<span class="op">/</span>w3[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">"black"</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].plot(LR.loss_history)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Iteration number"</span>, ylabel <span class="op">=</span> <span class="st">"Empirical Risk"</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].legend([<span class="st">"Stochastic Grad Desc"</span>])</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="GradientDescentBlog_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
 </div>
@@ -363,7 +364,7 @@ background-size: cover;
 <p>That doesn’t look good! It looks like we start out descending as we should, but then things look a little bit funky.</p>
 <p>Let’s dive into the loss history to see what happens here.</p>
 <div class="cell" data-execution_count="47">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>LR.loss_history[<span class="dv">6000</span>:<span class="dv">7000</span>:<span class="dv">100</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>LR.loss_history[<span class="dv">6000</span>:<span class="dv">7000</span>:<span class="dv">100</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="47">
 <pre><code>[0.14742965239913441,
  0.147269892933168,
@@ -384,13 +385,13 @@ background-size: cover;
 <p>How does batch_size influence the speed of the fit_stochastic method?</p>
 <p>Let’s explore this using a more complex set of points, with twelve feature dimensions.</p>
 <div class="cell" data-execution_count="111">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">11</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>X1, y1 <span class="op">=</span> make_blobs(n_samples <span class="op">=</span> <span class="dv">100</span>, n_features <span class="op">=</span> p <span class="op">-</span> <span class="dv">1</span>,centers <span class="op">=</span> <span class="dv">2</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>X1_ <span class="op">=</span> np.append(X, np.ones((X.shape[<span class="dv">0</span>], <span class="dv">1</span>)), <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">11</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>X1, y1 <span class="op">=</span> make_blobs(n_samples <span class="op">=</span> <span class="dv">100</span>, n_features <span class="op">=</span> p <span class="op">-</span> <span class="dv">1</span>,centers <span class="op">=</span> <span class="dv">2</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>X1_ <span class="op">=</span> np.append(X, np.ones((X.shape[<span class="dv">0</span>], <span class="dv">1</span>)), <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="112">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X1[<span class="dv">0</span>], X1.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X1[<span class="dv">0</span>], X1.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[ 2.31724415 -6.12119258 -6.56044559  5.94031272 -6.62189465 -0.6047373
  -1.65291106 -6.4506718   7.16439231  9.82855518] (100, 10)</code></pre>
@@ -398,56 +399,56 @@ background-size: cover;
 </div>
 <p>Okay, now we have 100 different points with 12 features each. Let’s try our algorithm on this set of points.</p>
 <div class="cell" data-execution_count="121">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>LR3 <span class="op">=</span> LogisticRegression()</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">50</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Since batch size is 10, that means there will be ten batches in each epoch (100 points / batch size 10 = 10 batches)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>LR3 <span class="op">=</span> LogisticRegression()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">50</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Since batch size is 10, that means there will be ten batches in each epoch (100 points / batch size 10 = 10 batches)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged</code></pre>
 </div>
 </div>
 <p>It converged! In how many steps?</p>
 <div class="cell" data-execution_count="122">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="122">
 <pre><code>10046</code></pre>
 </div>
 </div>
 <p>Let’s try divvying the batches more. With a batch size of 50 and 100 points, there are only 2 batches per epoch.</p>
 <div class="cell" data-execution_count="123">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="124">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="124">
 <pre><code>17562</code></pre>
 </div>
 </div>
 <p>Took longer than before.</p>
 <div class="cell" data-execution_count="125">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="126">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="126">
 <pre><code>22708</code></pre>
 </div>
 </div>
 <p>Starting to see a pretty clear pattern.</p>
 <div class="cell" data-execution_count="127">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>LR3.fit_stochastic(X1,y1,alpha <span class="op">=</span> <span class="fl">0.001</span>, m_epochs <span class="op">=</span> <span class="dv">20000</span>, batch_size <span class="op">=</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="128">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(LR3.loss_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="128">
 <pre><code>26346</code></pre>
 </div>
