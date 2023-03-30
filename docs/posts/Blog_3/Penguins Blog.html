@@ -221,13 +221,13 @@ background-size: cover;
 <h1>Why do we want to classify penguins?</h1>
 <p>I want to answer this question right off the bat. I think there are two answers: First, penguins are cool and cute. But more importantly, the process that we are going to use in this blog post is one that we can replicate for different datasets in the future. It doesn’t <em>really</em> matter that the data we will classify is penguins - it could be for the titanic, or the iris dataset. What matters is understanding how to use different machine learning techniques to develop an accurate model for classifying our data. Maybe the model we use in this process isn’t ideal for another dataset, or maybe we will need more than just 1 qualitative feature for a different dataset. However, the steps in this blog post are generally adaptable to a variety of situations.</p>
 <p>With that out of the way, let’s dive into it: first up is prepping our data so that it is ready for our model.</p>
-<div class="cell" data-execution_count="256">
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train_url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/middlebury-csci-0451/CSCI-0451/main/data/palmer-penguins/train.csv"</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> pd.read_csv(train_url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="122">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> LabelEncoder</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>le <span class="op">=</span> LabelEncoder()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>le.fit(train[<span class="st">"Species"</span>])</span>
@@ -246,31 +246,32 @@ background-size: cover;
 <section id="lets-try-to-choose-some-good-features." class="level2">
 <h2 class="anchored" data-anchor-id="lets-try-to-choose-some-good-features.">Let’s try to choose some good features.</h2>
 <p>I selected a Decision Tree Classifier for this process because I wanted to experiment with a new model. Using cross validation, I tried every possible different combination of 1 qualitative + 2 quantitative features, updating my list of top columns based on whichever yielded the highest mean score from the crossval subsets.</p>
-<div class="cell" data-execution_count="239">
+<div class="cell" data-execution_count="79">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> itertools <span class="im">import</span> combinations</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier(max_depth <span class="op">=</span> <span class="dv">4</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier()</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>all_qual_cols <span class="op">=</span> [<span class="st">"Clutch Completion"</span>, <span class="st">"Sex"</span>, <span class="st">"Island"</span>]</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>all_quant_cols <span class="op">=</span> [<span class="st">'Culmen Length (mm)'</span>, <span class="st">'Culmen Depth (mm)'</span>, <span class="st">'Flipper Length (mm)'</span>,<span class="st">'Body Mass (g)'</span>]</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>top_score <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>top_cols <span class="op">=</span> []</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> qual <span class="kw">in</span> all_qual_cols: </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  qual_cols <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> X_train.columns <span class="cf">if</span> qual <span class="kw">in</span> col ]</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> pair <span class="kw">in</span> combinations(all_quant_cols, <span class="dv">2</span>):</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    cols <span class="op">=</span> qual_cols <span class="op">+</span> <span class="bu">list</span>(pair) </span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># you could train models and score them here, keeping the list of </span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># columns for the model that has the best score. </span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    cvs <span class="op">=</span> cross_val_score(clf,X_train[cols],y_train,cv <span class="op">=</span> <span class="dv">5</span>)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cvs.mean() <span class="op">&gt;</span> top_score:</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        top_cols <span class="op">=</span> cols</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        top_score <span class="op">=</span> cvs.mean()</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_cols,top_score)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> qual <span class="kw">in</span> all_qual_cols: </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  qual_cols <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> X_train.columns <span class="cf">if</span> qual <span class="kw">in</span> col ]</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> pair <span class="kw">in</span> combinations(all_quant_cols, <span class="dv">2</span>):</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    cols <span class="op">=</span> qual_cols <span class="op">+</span> <span class="bu">list</span>(pair) </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># you could train models and score them here, keeping the list of </span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># columns for the model that has the best score. </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    cvs <span class="op">=</span> cross_val_score(clf,X_train[cols],y_train,cv <span class="op">=</span> <span class="dv">5</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cvs.mean() <span class="op">&gt;</span> top_score:</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        top_cols <span class="op">=</span> cols</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        top_score <span class="op">=</span> cvs.mean()</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_cols,top_score)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>['Island_Biscoe', 'Island_Dream', 'Island_Torgersen', 'Culmen Length (mm)', 'Culmen Depth (mm)'] 0.9803921568627452</code></pre>
 </div>
@@ -280,9 +281,9 @@ background-size: cover;
 <h2 class="anchored" data-anchor-id="which-qualitative-features-were-selected">Which qualitative features were selected?</h2>
 <p>It looks like islands are the best qualitative feature for fitting a classifier. Why is this?</p>
 <p>We can filter our training data to see how many different islands the 3 species call home:</p>
-<div class="cell" data-execution_count="232">
+<div class="cell" data-execution_count="80">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>train.groupby(<span class="st">"Species"</span>)[<span class="st">"Island"</span>].nunique()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="232">
+<div class="cell-output cell-output-display" data-execution_count="80">
 <pre><code>Species
 Adelie Penguin (Pygoscelis adeliae)          3
 Chinstrap penguin (Pygoscelis antarctica)    1
@@ -291,9 +292,9 @@ Name: Island, dtype: int64</code></pre>
 </div>
 </div>
 <p>Interesting! So the Adelie Penguin is the only species on all three islands – Chinstrap and Gentoo are only on one each.</p>
-<div class="cell" data-execution_count="233">
+<div class="cell" data-execution_count="81">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>train[[<span class="st">"Island"</span>,<span class="st">"Species"</span>]].groupby(<span class="st">"Island"</span>).value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="233">
+<div class="cell-output cell-output-display" data-execution_count="81">
 <pre><code>Island     Species                                  
 Biscoe     Gentoo penguin (Pygoscelis papua)            101
            Adelie Penguin (Pygoscelis adeliae)           35
@@ -308,9 +309,9 @@ dtype: int64</code></pre>
 <section id="which-quantitative-features-were-selected" class="level2">
 <h2 class="anchored" data-anchor-id="which-quantitative-features-were-selected">Which quantitative features were selected?</h2>
 <p>Culmen length and depth were the two features selected. Let’s see how these vary by species.</p>
-<div class="cell" data-execution_count="234">
+<div class="cell" data-execution_count="82">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>train[[<span class="st">"Species"</span>,<span class="st">"Culmen Length (mm)"</span>, <span class="st">"Culmen Depth (mm)"</span>]].groupby(<span class="st">"Species"</span>).mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="234">
+<div class="cell-output cell-output-display" data-execution_count="82">
 
 <div>
 
@@ -348,9 +349,9 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="235">
+<div class="cell" data-execution_count="83">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>train[[<span class="st">"Species"</span>,<span class="st">"Culmen Length (mm)"</span>, <span class="st">"Culmen Depth (mm)"</span>]].groupby(<span class="st">"Species"</span>).mean().plot.bar(rot<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="235">
+<div class="cell-output cell-output-display" data-execution_count="83">
 <pre><code>&lt;AxesSubplot: xlabel='Species'&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -361,9 +362,9 @@ dtype: int64</code></pre>
 <section id="just-for-my-own-curiosity-lets-see-if-culmen-lengthdepth-varies-by-species-by-island." class="level4">
 <h4 class="anchored" data-anchor-id="just-for-my-own-curiosity-lets-see-if-culmen-lengthdepth-varies-by-species-by-island.">Just for my own curiosity, let’s see if culmen length/depth varies by species by island.</h4>
 <p>Is a difference in environment enough to change the physical characteristics of a species? Or in this case, of one species, since Adelie penguins are the only ones to appear on more than one island?</p>
-<div class="cell" data-execution_count="236">
+<div class="cell" data-execution_count="84">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>train[[<span class="st">"Island"</span>,<span class="st">"Species"</span>,<span class="st">"Culmen Length (mm)"</span>, <span class="st">"Culmen Depth (mm)"</span>]].groupby([<span class="st">"Island"</span>,<span class="st">"Species"</span>]).mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="236">
+<div class="cell-output cell-output-display" data-execution_count="84">
 
 <div>
 
@@ -422,30 +423,32 @@ dtype: int64</code></pre>
 </section>
 <section id="now-were-ready-to-test-our-classifier" class="level2">
 <h2 class="anchored" data-anchor-id="now-were-ready-to-test-our-classifier">Now we’re ready to test our classifier…</h2>
-<p>Step one is reading in the test data, then running our classifier on the test data filtered to contain only our selected features. Then we can check to see the accuracy of the classifier.</p>
-<div class="cell" data-execution_count="240">
+<p>Here, we read in the test data, then score our classifier on the test data filtered to contain only our selected features. We DO NOT fit the classifier to the testing data, because we want it to be scored based on the model trained on the training data. So we first fit it to the TRAINING data, then score it on the testing data.</p>
+<div class="cell" data-execution_count="85">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>test_url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/middlebury-csci-0451/CSCI-0451/main/data/palmer-penguins/test.csv"</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> pd.read_csv(test_url)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> prepare_data(test)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>clf.fit(X_test[top_cols], y_test)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>clf.score(X_test[top_cols],y_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="240">
-<pre><code>1.0</code></pre>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>clf.fit(X_train[top_cols],y_train)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> prepare_data(test)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>clf.score(X_test[top_cols],y_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="85">
+<pre><code>0.9852941176470589</code></pre>
 </div>
 </div>
-<p>100% accuracy. Perfect!</p>
+<p>98.5% accuracy. Pretty close to perfect!</p>
 </section>
 <section id="how-does-the-decision-tree-classifier-actually-work" class="level2">
 <h2 class="anchored" data-anchor-id="how-does-the-decision-tree-classifier-actually-work">How does the decision tree classifier actually work?</h2>
 <p>I adapted this technique from the scikit learn documentation page: https://scikit-learn.org/stable/auto_examples/tree/plot_iris_dtc.html</p>
 <p>This shows us the depth of the tree, and how many samples remain to classify at each step. This tree has a depth of 4, which means it needs to make a maximum of 4 decisions to reach a classification for a sample.</p>
-<div class="cell" data-execution_count="241">
+<div class="cell" data-execution_count="86">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> plot_tree</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plot_tree(clf, filled<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Decision tree trained on 3 Penguin Features: Culmen Length, Depth, and Island"</span>)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>plot_tree(clf, filled<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Decision tree trained on 3 Penguin Features: Culmen Length, Depth, and Island"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="Penguins%20Blog_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
 </div>
@@ -453,71 +456,92 @@ dtype: int64</code></pre>
 </section>
 <section id="now-lets-vizualize-the-decision-regions-of-our-model." class="level2">
 <h2 class="anchored" data-anchor-id="now-lets-vizualize-the-decision-regions-of-our-model.">Now let’s vizualize the decision regions of our model.</h2>
-<div class="cell" data-execution_count="254">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Patch</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="bu">len</span>(qual_features), figsize <span class="op">=</span> (<span class="dv">10</span>, <span class="dv">5</span>))</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>grid_x <span class="op">=</span> np.linspace(x0.<span class="bu">min</span>() <span class="op">-</span> <span class="dv">1</span>,x0.<span class="bu">max</span>() <span class="op">+</span> <span class="dv">1</span>,<span class="dv">501</span>)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>grid_y <span class="op">=</span> np.linspace(x1.<span class="bu">min</span>() <span class="op">-</span> <span class="dv">1</span>,x1.<span class="bu">max</span>() <span class="op">+</span> <span class="dv">1</span>,<span class="dv">501</span>)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>xx, yy <span class="op">=</span> np.meshgrid(grid_x, grid_y)</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>XX <span class="op">=</span> xx.ravel()</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>YY <span class="op">=</span> yy.ravel()</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(qual_features)):</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    XY <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>      X_plot.columns[<span class="dv">3</span>] : XX,</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>      X_plot.columns[<span class="dv">4</span>] : YY</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> qual_features[::<span class="op">-</span><span class="dv">1</span>]:</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>        XY.insert(<span class="dv">0</span>,j,<span class="dv">0</span>)</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    XY[qual_features[i]] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> clf.predict(XY.values)</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> p.reshape(xx.shape)</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># use contour plot to visualize the predictions</span></span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>    axarr[i].contourf(xx, yy, p, cmap<span class="op">=</span><span class="st">'jet'</span>,alpha <span class="op">=</span> <span class="fl">0.2</span>,vmin <span class="op">=</span> <span class="dv">0</span>, vmax <span class="op">=</span> <span class="dv">2</span>)</span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>    ix <span class="op">=</span> X_plot[qual_features[i]] <span class="op">==</span> <span class="dv">1</span></span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># plot the data</span></span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    axarr[i].scatter(x0[ix], x1[ix], c <span class="op">=</span> y_test[ix], cmap <span class="op">=</span> <span class="st">"jet"</span>, vmin <span class="op">=</span> <span class="dv">0</span>, vmax <span class="op">=</span> <span class="dv">2</span>)</span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    axarr[i].set_title(label <span class="op">=</span> qual_features[i])</span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>    axarr[i].<span class="bu">set</span>(xlabel <span class="op">=</span> X_plot.columns[<span class="dv">3</span>], </span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>        ylabel  <span class="op">=</span> X_plot.columns[<span class="dv">4</span>])</span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>    patches <span class="op">=</span> []</span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> color, spec <span class="kw">in</span> <span class="bu">zip</span>([<span class="st">"red"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span>], [<span class="st">"Gentoo"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Adelie"</span>]):</span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>        patches.append(Patch(color <span class="op">=</span> color, label <span class="op">=</span> spec))</span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>        plt.legend(title <span class="op">=</span> <span class="st">"Species"</span>, handles <span class="op">=</span> patches, loc <span class="op">=</span> <span class="st">"best"</span>)</span>
-<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>        plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="87">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>X_plot <span class="op">=</span> X_test[top_cols]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>qual_features <span class="op">=</span> [<span class="st">"Island_Biscoe"</span>,<span class="st">"Island_Dream"</span>,<span class="st">"Island_Torgersen"</span>]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>x0 <span class="op">=</span> X_plot[X_plot.columns[<span class="dv">3</span>]]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> X_plot[X_plot.columns[<span class="dv">4</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="88">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Patch</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="bu">len</span>(qual_features), figsize <span class="op">=</span> (<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>grid_x <span class="op">=</span> np.linspace(x0.<span class="bu">min</span>() <span class="op">-</span> <span class="dv">1</span>,x0.<span class="bu">max</span>() <span class="op">+</span> <span class="dv">1</span>,<span class="dv">501</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>grid_y <span class="op">=</span> np.linspace(x1.<span class="bu">min</span>() <span class="op">-</span> <span class="dv">1</span>,x1.<span class="bu">max</span>() <span class="op">+</span> <span class="dv">1</span>,<span class="dv">501</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>xx, yy <span class="op">=</span> np.meshgrid(grid_x, grid_y)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>XX <span class="op">=</span> xx.ravel()</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>YY <span class="op">=</span> yy.ravel()</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(qual_features)):</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    XY <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>      X_plot.columns[<span class="dv">3</span>] : XX,</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>      X_plot.columns[<span class="dv">4</span>] : YY</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> qual_features[::<span class="op">-</span><span class="dv">1</span>]:</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>        XY.insert(<span class="dv">0</span>,j,<span class="dv">0</span>)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    XY[qual_features[i]] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> clf.predict(XY.values)</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> p.reshape(xx.shape)</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># use contour plot to visualize the predictions</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    axarr[i].contourf(xx, yy, p, cmap<span class="op">=</span><span class="st">'jet'</span>,alpha <span class="op">=</span> <span class="fl">0.2</span>,vmin <span class="op">=</span> <span class="dv">0</span>, vmax <span class="op">=</span> <span class="dv">2</span>)</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>    ix <span class="op">=</span> X_plot[qual_features[i]] <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># plot the data</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>    axarr[i].scatter(x0[ix], x1[ix], c <span class="op">=</span> y_test[ix], cmap <span class="op">=</span> <span class="st">"jet"</span>, vmin <span class="op">=</span> <span class="dv">0</span>, vmax <span class="op">=</span> <span class="dv">2</span>)</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>    axarr[i].set_title(label <span class="op">=</span> qual_features[i])</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>    axarr[i].<span class="bu">set</span>(xlabel <span class="op">=</span> X_plot.columns[<span class="dv">3</span>], </span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>        ylabel  <span class="op">=</span> X_plot.columns[<span class="dv">4</span>])</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>    patches <span class="op">=</span> []</span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> color, spec <span class="kw">in</span> <span class="bu">zip</span>([<span class="st">"red"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span>], [<span class="st">"Gentoo"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Adelie"</span>]):</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>        patches.append(Patch(color <span class="op">=</span> color, label <span class="op">=</span> spec))</span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>        plt.legend(title <span class="op">=</span> <span class="st">"Species"</span>, handles <span class="op">=</span> patches, loc <span class="op">=</span> <span class="st">"best"</span>)</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>        plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="Penguins%20Blog_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+<p><img src="Penguins%20Blog_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>This is an interesting vizualization. It gives us a glimpse at the blocky nature of the decision tree classifer - rather than separating these data with a single straight line, a Decision Tree Classifier almost breaks the plot up into rectangles.</p>
 <p>This is because the Decision Tree Classifer works by dividing along one of the two axes at each iteration of the fit process. So it can only divide vertically or horizontally. Over time, it makes smaller and more precise rectangular subsections that classify the data more and more accurately.</p>
 </section>
-<section id="closing-thoughts-is-this-model-overfit" class="level2">
-<h2 class="anchored" data-anchor-id="closing-thoughts-is-this-model-overfit">Closing thoughts… is this model overfit?</h2>
-<p>I pose this question because of the strange decision region in the Dream Island plot that classifies Gentoo penguins even though none are present on the island, and likewise with Chinstraps on Biscoe. A simple test is to run our classifier with a lower depth and see how well it performs.</p>
-<div class="cell" data-execution_count="255">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>clf2 <span class="op">=</span> DecisionTreeClassifier(max_depth <span class="op">=</span> <span class="dv">3</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>clf2.fit(X_test[top_cols], y_test)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>clf2.score(X_test[top_cols], y_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="255">
-<pre><code>0.9852941176470589</code></pre>
+<section id="closing-thoughts-could-this-work-well-at-a-lower-depth" class="level2">
+<h2 class="anchored" data-anchor-id="closing-thoughts-could-this-work-well-at-a-lower-depth">Closing thoughts… Could this work well at a lower depth?</h2>
+<p>A simple test is to run our classifier with a lower depth and see how well it performs.</p>
+<div class="cell" data-execution_count="90">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>clf2 <span class="op">=</span> DecisionTreeClassifier(max_depth <span class="op">=</span> <span class="dv">4</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>clf3 <span class="op">=</span> DecisionTreeClassifier(max_depth <span class="op">=</span> <span class="dv">3</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>clf2.fit(X_train[top_cols], y_train)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>score4 <span class="op">=</span> clf2.score(X_test[top_cols], y_test)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>clf3.fit(X_train[top_cols], y_train)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>score3 <span class="op">=</span> clf3.score(X_test[top_cols], y_test)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>score4,score3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="90">
+<pre><code>(0.9852941176470589, 0.9852941176470589)</code></pre>
 </div>
 </div>
-<p>So, I would say not overfit. The model still performs well at a depth of 3, but increasing the depth by one allows us to correctly classify every sample without making anything too weird in the model.</p>
+<div class="cell" data-execution_count="92">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>score4 <span class="op">==</span> score3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
+<pre><code>True</code></pre>
+</div>
+</div>
+<p>It looks like the classifier can run well at lower depths. The model still performs well at a depth of 4, and 3. However, even with the depth of five that the classifier automatically selected, the accuracy stays the same and there is no real gap between testing and training data. This means that the model is not overfit to the training data, so while the greater depth may not add anything, it doesn’t detract from the model either.</p>
 <p>In summary, this was an interesting process. Starting off knowing nothing about the distribution of the species or their physical characteristics, we were able to automate most of the process of building a model to classify them. This speaks to the power of machine learning and how quickly it can break down a complicated process to reach the desired end result.</p>
 <p>Obviously not every dataset can be 100% accurately classified as this penguin one could, but a process like this gets us pretty close.</p>
 <p>And finally, to honor the three heroes of this blog post, here they are in all their glory:</p>
