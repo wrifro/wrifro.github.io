@@ -596,8 +596,7 @@
     "\n",
     "## Conclusion\n",
     "\n",
-    "The power of the linear regression model is apparent from these tests. Rather than focusing on labeling datapoints, it is able to come up with a model that predicts what a hypothetical datapoint's value should be based on the values of the other datapoints. There are slight differences between the different approaches to the model - stochastic gradient descent achieves an optimal result with impressive speed, for example - but at the end of the day all of the different approaches yield more or less the same result.\n",
-    "\n"
+    "The power of the linear regression model is apparent from these tests. Rather than focusing on labeling datapoints, it is able to come up with a model that predicts what a hypothetical datapoint's value should be based on the values of the other datapoints. There are slight differences between the different approaches to the model - stochastic gradient descent achieves an optimal result with impressive speed, for example - but at the end of the day all of the different approaches yield more or less the same result."
    ]
   }
  ],
