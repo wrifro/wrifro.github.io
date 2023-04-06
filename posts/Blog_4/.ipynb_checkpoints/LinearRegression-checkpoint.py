@@ -7,12 +7,12 @@ from scipy.optimize import minimize
 class LinearRegression:
     
     def __init__(self):
-        self.w = np.zeros(2)
         self.loss_history = []
         self.score_history = []
     
     def fit(self,X,y):
         X = self.pad(X)
+        self.X = X
         
         w_hat = np.linalg.inv(X.T@X)@X.T@y
         
@@ -20,39 +20,66 @@ class LinearRegression:
         
     def fit_gradient(self,X,y,alpha,m_epochs):
         X = self.pad(X)
-        P = X.T@X
-        q = X.T@y
+        self.X = X
+        
+        self.w = np.zeros(X.shape[1])
+        
+        P = (X.T)@X
+        q = (X.T)@y
         
         for epoch in range(m_epochs):
             w_prev = self.w
 
-            grad = 2 * (P@w_prev - q)
+            grad = 2 * (P@self.w - q)
             
             w_new = w_prev - (alpha * grad)
             
-            prev_loss = self.loss(X,y,w_prev)
-            
             self.w = w_new
+            
+            score = self.score(X,y)
+            
+            self.score_history.append(score)
+            
+    def fit_stochastic(self,X,y,alpha, m_epochs,batch_size):
+        X = self.pad(X)
+        n = X.shape[0]
+        self.w = np.zeros(X.shape[1])
+        
+        P = (X.T)@X
+        q = (X.T)@y
+        
+        for j in np.arange(m_epochs):
+            order = np.arange(n)
+            np.random.shuffle(order)
+            
+            for batch in np.array_split(order, n // batch_size + 1):
+                w_prev = self.w
+                
+                x_batch = X[batch,:]
+                y_batch = y[batch]
+
+                grad = 2 * (P@self.w - q)
+            
+                w_new = w_prev - (alpha * grad)
+            
+                self.w = w_new
+                
+            score = self.score(X,y)
+            self.score_history.append(score)
     
                 
     def score(self,X,y):
-        ## This method returns the score/accuracy of the y values predicted with the most recent weight vector
-        ## I found it easier to think of y as -1 and 1, like we did in perceptron, rather than 1 and 0, so I
-        ## converted it to an array of -1s and 1s here for my own convenience.
-        y_ = 2*y-1
-        return(np.mean((y_== (2*((X@self.w) > 0)-1))))
+        y_hat = self.predict(X,self.w)
+        numerator = np.sum((y_hat - y)**2)
+        y_bar = np.mean(y)
+        denominator = np.sum((y_bar - y)**2)
+        
+        return(1 - (numerator/denominator) )
+        
 
     ## All methods below were adapted/borrowed from the notes for the lecture on Gradient Descent.
     def predict(self,X, w):
         return (X@w)
-
-    def sigmoid(self,z):
-        return 1 / (1 + np.exp(-z))
-
-    def loss(self,X, y, w):
-        y_hat = self.predict(X,w)
-        loss_all = -y*np.log(self.sigmoid(y_hat)) - (1-y)*np.log(1-self.sigmoid(y_hat))
-        return loss_all.mean()
     
     def pad(self,X):
         return np.append(X, np.ones((X.shape[0], 1)), 1)
