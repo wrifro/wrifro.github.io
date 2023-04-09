@@ -2,9 +2,25 @@
  "cells": [
   {
    "cell_type": "markdown",
+   "id": "6ef00862-e7f4-4af6-8550-e6d16f6d0175",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "title: Linear Regression\n",
+    "author: Wright Frost\n",
+    "date: '2023-04-09'\n",
+    "description: 'Implementing and testing a linear regression model'\n",
+    "format: html\n",
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "id": "a4c4e7ea-16ba-498e-8351-1d44cef62d6e",
    "metadata": {},
    "source": [
+    "Source code: https://github.com/wrifro/wrifro.github.io/blob/main/posts/Blog_4/LinearRegression.py\n",
+    "\n",
     "# Introduction & Background\n",
     "\n",
     "Unlike Perceptron and Logistic Regression, which classify a data point (predict a specific label for it), Linear Regression is a *prediction* algorithm. Given features for a data point, it will predict a value for that point. The range of values Linear Regression can predict are continuous, not a finite set of labels.\n",

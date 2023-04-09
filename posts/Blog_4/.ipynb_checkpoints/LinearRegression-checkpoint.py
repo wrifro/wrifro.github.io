@@ -10,7 +10,7 @@ class LinearRegression:
         self.loss_history = []
         self.score_history = []
     
-    def fit(self,X,y):
+    def fit(self,X,y): # Main fit method - uses formula to calculate optimal w_hat
         X = self.pad(X)
         self.X = X
         
@@ -18,7 +18,10 @@ class LinearRegression:
         
         self.w = w_hat
         
-    def fit_gradient(self,X,y,alpha,m_epochs):
+    def fit_gradient(self,X,y,alpha,m_epochs): # Gradient Descent fit method - calculates the gradient
+        # and updates for each iteration in m_epochs. Speed of gradient descent is dictated by alpha,
+        # the learning rate for the function.
+        
         X = self.pad(X)
         self.X = X
         
@@ -41,6 +44,10 @@ class LinearRegression:
             self.score_history.append(score)
             
     def fit_stochastic(self,X,y,alpha, m_epochs,batch_size):
+        # Runs much like regular gradient descent, but breaks up datapoints into smaller batches
+        # to recalculate the gradient several times in each step. Batch_size dictates how many
+        # datapoints are in each batch.
+        
         X = self.pad(X)
         n = X.shape[0]
         self.w = np.zeros(X.shape[1])
@@ -69,6 +76,8 @@ class LinearRegression:
     
                 
     def score(self,X,y):
+        # Calculates score/accuracy for the model based on the parameters used to fit it.
+        
         y_hat = self.predict(X,self.w)
         numerator = np.sum((y_hat - y)**2)
         y_bar = np.mean(y)
