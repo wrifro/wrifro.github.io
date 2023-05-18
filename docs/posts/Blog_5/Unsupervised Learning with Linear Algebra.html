@@ -220,22 +220,24 @@ background-size: cover;
 <p>Compressing files is a key computational procedure. One approach to image compression is Singular Value Decomposition, where a matrix is broken down into its nonzero (singular) values and two orthagonal matrices. By choosing only a subset of the singular values from which to reconstruct the image, we can achieve significant reductions in image size while retaining a high degree of clarity. In this blog, I explore the process of breaking down and reconstructing an image using different subsets of an image’s singular values.</p>
 <hr>
 <p>Let’s begin by reading in an image and converting it to grayscale. I chose the famous <em>Earthrise</em> image from the Apollo 8 mission.</p>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="46">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="53">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PIL</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_image(url):</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(PIL.Image.<span class="bu">open</span>(urllib.request.urlopen(url)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="48">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">'https://www.nasa.gov/sites/default/files/thumbnails/image/apollo08_earthrise.jpg'</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> read_image(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="112">
+<div class="cell" data-execution_count="54">
+<details>
+<summary>code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig, axarr <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize <span class="op">=</span> (<span class="dv">10</span>, <span class="dv">5</span>))</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> to_greyscale(im):</span>
@@ -250,16 +252,17 @@ background-size: cover;
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].imshow(grey_img, cmap <span class="op">=</span> <span class="st">"Greys"</span>)</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].axis(<span class="st">"off"</span>)</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>axarr[<span class="dv">1</span>].<span class="bu">set</span>(title <span class="op">=</span> <span class="st">"greyscale"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="112">
+</details>
+<div class="cell-output cell-output-display" data-execution_count="54">
 <pre><code>[Text(0.5, 1.0, 'greyscale')]</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="Unsupervised%20Learning%20with%20Linear%20Algebra_files/figure-html/cell-5-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="10">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>grey_img.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>(2190, 2280)</code></pre>
 </div>
 </div>
@@ -276,7 +279,9 @@ background-size: cover;
 </div>
 <p>Applying this process to a smaller subset of <code>U</code>, <code>D</code>, and <code>V</code> - that is to say, the first <code>k</code> columns of <code>U</code>, the top <code>k</code> values in <code>D</code>, and the first <code>k</code> rows of <code>V</code> - lets us approximate the original image.</p>
 <p>Below, the function <code>svd_reconstruct</code> does this for an image and a value <code>k</code>. It first calculates the singular value decomposition of an image, then reconstructs it and returns based on the number of singular values specified by the users.</p>
-<div class="cell" data-execution_count="195">
+<div class="cell" data-execution_count="55">
+<details>
+<summary>show it to me</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> svd_reconstruct(img,k,compFactor):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(compFactor <span class="op">&gt;</span> <span class="dv">0</span>): <span class="co"># if you would rather specify degree of compression than enter a value for k, set compFactor to</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                        <span class="co"># a value greater than zero. For example, calling svd_reconstruct(img = img,k = 0, compFactor = 10)</span></span>
@@ -300,7 +305,8 @@ background-size: cover;
 <span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>reconImg <span class="op">=</span> svd_reconstruct(grey_img,<span class="dv">30</span>,<span class="dv">0</span>) <span class="co"># Image reconstructed with top 30 singular values</span></span>
 <span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>plt.imshow(reconImg,cmap <span class="op">=</span> <span class="st">'Greys'</span>)</span>
 <span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="195">
+</details>
+<div class="cell-output cell-output-display" data-execution_count="55">
 <pre><code>(-0.5, 2279.5, 2189.5, -0.5)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -314,6 +320,8 @@ background-size: cover;
 <p>For compressed images, the size is directly proportional to <code>k</code>. We can calculate it using the formula <span class="math inline">\(k(m + n + 1)\)</span>. We get this because we multiply <code>k*m</code> values in <code>U</code> by a <code>k*k</code> matrix in <code>D</code>, although it actually only has a size of <code>k</code> since values are only along the diagonal, and a <code>k*n</code> subset of <code>V</code>. This gives <span class="math inline">\(k*m + k * k*n = k(m + 1 + n)\)</span>.</p>
 <p>Below, we define a function to calculate the compression ratio: <span class="math inline">\(\frac{originalSize}{compressedSize}\)</span> and the percent storage <span class="math inline">\(\frac{compressedSize}{originalSize} \cdot 100\)</span></p>
 <div class="cell" data-execution_count="169">
+<details>
+<summary>click here to</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compression(img,k):</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> img.shape[<span class="dv">0</span>]</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> img.shape[<span class="dv">1</span>]</span>
@@ -323,6 +331,7 @@ background-size: cover;
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    compressionRatio <span class="op">=</span> origSize<span class="op">/</span>compressedSize</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> percentStorage,compressionRatio</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <hr>
 <section id="reconstructing-images-based-on-compression-factor-instead-of-k-values" class="level4">
